@@ -1,0 +1,57 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pdftablex"
+version = "0.1.0"
+description = "High-fidelity recovery of tabular data from print-to-PDF exports, with an evidence-based verification protocol."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "pdftablex contributors" }]
+keywords = ["pdf", "table", "extraction", "pymupdf", "bom", "data-recovery", "verification"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Text Processing",
+]
+
+dependencies = [
+  "pymupdf>=1.24",
+  "openpyxl>=3.1",
+  "english-words>=2.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[project.scripts]
+pdftablex = "pdftablex.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/your-org/pdftablex"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pdftablex"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = ["examples/synthetic"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM", "RUF"]
+ignore = [
+  "E501",   # line length is the formatter's job
+  "SIM108", # ternaries are not always clearer than an if/else
+  "RUF001", # CJK and full-width punctuation are the data here, not typos
+  "RUF022", # __all__ is grouped by module for readability, not sorted
+]
+
+[tool.ruff.lint.per-file-ignores]
+# The tests deliberately import after sys.path manipulation.
+"tests/*" = ["E402"]

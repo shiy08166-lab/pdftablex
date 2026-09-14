@@ -1,0 +1,52 @@
+{
+  "right_edge": 545.0,
+  "columns": [
+    {
+      "name": "no",
+      "left": 45.0,
+      "kind": "code"
+    },
+    {
+      "name": "title_cn",
+      "left": 68.0,
+      "kind": "cjk"
+    },
+    {
+      "name": "title_en",
+      "left": 150.0,
+      "kind": "en"
+    },
+    {
+      "name": "subject_cn",
+      "left": 350.0,
+      "kind": "cjk"
+    },
+    {
+      "name": "call_code",
+      "left": 440.0,
+      "kind": "code"
+    },
+    {
+      "name": "year",
+      "left": 505.0,
+      "kind": "digit"
+    }
+  ],
+  "anchor": {
+    "column": 0,
+    "max_x": 66.0,
+    "min_digits": 1,
+    "max_digits": 5,
+    "placeholder": "####",
+    "spill_column": null
+  },
+  "page": {
+    "data_top": 60.0,
+    "first_page_data_top": null,
+    "footer_bottom": 800.0,
+    "watermarks": [
+      "SAMPLEDATA"
+    ],
+    "subline_gap": 1.2
+  }
+}

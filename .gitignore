@@ -1,0 +1,79 @@
+# ============================================================
+#  DATA PROTECTION — READ THIS BEFORE ADDING ANYTHING
+# ------------------------------------------------------------
+#  This repository ships METHOD + CODE + SYNTHETIC SAMPLES only.
+#  Never commit real documents. PDFs, spreadsheets and CSV
+#  exports of real data routinely contain confidential part
+#  numbers, supplier names, prices and customer identifiers.
+# ============================================================
+
+# --- Real input documents (any location) ---
+*.pdf
+*.PDF
+!examples/synthetic/*.pdf
+*.xlsx
+*.xls
+*.xlsm
+*.csv
+*.tsv
+*.docx
+*.doc
+*.pptx
+!examples/synthetic/*.csv
+!examples/synthetic/*.xlsx
+
+# --- Extracted / intermediate data ---
+*.json
+!examples/synthetic/*.json
+!pyproject.json
+data/
+input/
+inputs/
+output/
+outputs/
+samples/private/
+*.sql
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+
+# --- Render forensics (screenshots of real documents) ---
+*.png
+*.jpg
+*.jpeg
+*.tif
+*.tiff
+*.webp
+!docs/assets/*.png
+
+# --- Environment ---
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Agent workspace memory (may quote real data) ---
+.workbuddy/
+.workbuddy-ai/
+
+# --- Local scratch ---
+scratch/
+tmp/
+*.local.*

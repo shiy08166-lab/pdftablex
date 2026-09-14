@@ -1,0 +1,11 @@
+# Normalise line endings: LF in the repository, on every platform.
+* text=auto eol=lf
+
+# Generated demo artefacts — never diff these.
+*.pdf   binary
+*.xlsx  binary
+*.png   binary
+
+# Keep the synthetic fixtures out of language statistics.
+examples/synthetic/* linguist-generated=true
+skills/pdf-table-extraction/references/* linguist-generated=true
