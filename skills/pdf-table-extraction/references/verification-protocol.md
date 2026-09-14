@@ -90,6 +90,7 @@ Collected from things that actually went wrong. Each one cost a re-run.
 |---|---|
 | Scanning for split words with an all-letters test | Misses `INDEX/CATALO` + `GUE`; the split hides behind a slash |
 | Different case conventions on the two sides | Flood of false `m`/`M`, `x`/`X`, `φ`/`Φ` alarms |
+| Normalising a band one character at a time | Case folding is not one-to-one — `'ß'.upper()` is two characters. Per-character normalisation records one `'SS'` key where per-string normalisation records two `'S'` keys, and the two sides then measure different alphabets |
 | Keying a repair dictionary by row instead of row+column | A second repair in the same row overwrites the first |
 | Writing with `index + 1` instead of the original row number | The whole file shifts by one row |
 | Reversing a slice bound (`[:1]` vs `[1:]`) | Repairs silently produce empty strings |
@@ -97,6 +98,7 @@ Collected from things that actually went wrong. Each one cost a re-run.
 | Treating source-system losses as conversion bugs | You cannot repair data that was never exported |
 | Splitting a trailing block by pure geometry | Wrap gaps and row gaps overlap; names get merged |
 | Editing one script from several places at once | Parallel edits overwrite each other — serialise them |
+| Building a test fixture without checking it can host the defect | A fixture that silently plants nothing makes the pipeline look better than it is |
 
 ## The uncomfortable rule
 

@@ -97,19 +97,26 @@ def verify_written_xlsx(
     """Read the file back and compare it against the rows we meant to write.
 
     Returns ``(row, col, expected, found)`` for every cell that differs.
+
+    Iterates with ``iter_rows`` rather than indexing with ``ws.cell()``: in
+    read-only mode a coordinate lookup is not O(1), and a few thousand cells
+    turns the read-back into an O(n^2) crawl that looks exactly like a hang.
     """
     wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
     ws = wb.active
     mismatches: list[tuple[int, int, str, str]] = []
 
     expected = rows_as_lists(rows, spec)
-    for i, want in enumerate(expected):
-        excel_row = i + 1 + header_rows
-        for col, want_value in enumerate(want, start=1):
-            got = ws.cell(excel_row, col).value
+    for i, values in enumerate(
+        ws.iter_rows(min_row=1 + header_rows, values_only=True)
+    ):
+        if i >= len(expected):
+            break
+        for col, want_value in enumerate(expected[i]):
+            got = values[col] if col < len(values) else None
             got_text = "" if got is None else str(got)
             if hard(got_text) != hard(want_value):
-                mismatches.append((excel_row, col, want_value, got_text))
+                mismatches.append((i + 1 + header_rows, col + 1, want_value, got_text))
 
     wb.close()
     return mismatches

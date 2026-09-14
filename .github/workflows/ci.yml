@@ -40,6 +40,11 @@ jobs:
           python examples/make_synthetic_pdf.py --outdir examples/synthetic
           python examples/demo.py
 
+      - name: Public-data demo (fetch, simulate an export, recover it)
+        run: |
+          python examples/fetch_public.py
+          python examples/demo_public.py --rows 200 --stride 401
+
       - name: The single-file fallback must still run
         run: |
           cd examples/synthetic

@@ -77,3 +77,7 @@ desktop.ini
 scratch/
 tmp/
 *.local.*
+
+# --- Fetched public datasets (regenerate with examples/fetch_public.py) ---
+# The repository ships code, not data — even when the data is public domain.
+examples/public/

@@ -72,21 +72,60 @@ Python 3.10+. The only heavy dependency is PyMuPDF.
 
 ## Quickstart
 
-### The demo
+### Two demos
 
-Everything below runs on a **synthetic, entirely fictional** library catalogue
-that the repository generates itself — no data files are shipped.
+**1. A synthetic catalogue** — invented, tiny, and hermetic. Six columns.
 
 ```bash
 python examples/make_synthetic_pdf.py --outdir examples/synthetic
 python examples/demo.py
 ```
 
-The generator deliberately injects nine real-world export defects (word split,
-slash-hidden split, swallowed space, double space, CJK wrap, column overflow,
-interleaved wrap, watermark, footer). The demo shows the naive extraction
-failing on all three comparison levels, then the repair pass driving every
-count to zero.
+The generator injects nine real-world export defects (word split, slash-hidden
+split, swallowed space, double space, CJK wrap, column overflow, interleaved
+wrap, watermark, footer). The demo shows the naive extraction failing at all
+three comparison levels, then the repair pass driving every count to zero.
+
+**2. Real public data** — OurAirports, public domain, sixteen columns.
+
+```bash
+python examples/fetch_public.py
+python examples/demo_public.py
+```
+
+```
+naive extraction     rows 400,  wrong cells: exact 18, whitespace 15, content 9
+after repair         rows 400,  wrong cells: exact 2,  whitespace 2,  content 2
+                     (the 2 are #### cells the PDF destroyed — reported, not invented)
+character conservation: OK — no character created or lost
+unexpected differences: 0
+PASS
+```
+
+Two fixtures because they fail differently. Invented data is tidy; real data has
+108-character airport names, values that overflow their column, and text with
+enough English words in it that a hard-wrapped word can actually be detected and
+rejoined. If the pipeline only works on the tidy one, it does not work.
+
+Neither fixture is committed: `examples/public/` is git-ignored, and the
+synthetic one is generated on demand.
+
+### Writing your own fixture
+
+`examples/export_sim.py` turns any CSV into a print-to-PDF export with chosen
+defects — useful for testing against your own data without shipping it.
+
+```python
+from export_sim import plan_layout, plan_defects, render_export, spec_for
+
+layout = plan_layout(header, rows, page_width=842, page_height=595)
+defects = plan_defects(rows, layout, seed=7)      # only plants what the data can host
+result = render_export(header, rows, layout, defects, "export.pdf")
+spec = spec_for(layout)                            # the matching TableSpec
+
+print(result.applied)   # what was actually planted
+print(result.skipped)   # what was not physically possible
+```
 
 ### Command line
 
@@ -283,7 +322,11 @@ This repository ships **method, code and synthetic samples only**.
 Real exports leak. A parts BOM carries supplier names and part numbers; a
 ledger carries account identities; a catalogue carries customer data. The
 `.gitignore` blocks `*.pdf`, `*.xlsx`, `*.csv`, `*.json`, `*.png`, `*.sql` and
-`*.db` by default, and only re-admits files under `examples/synthetic/`.
+`*.db` by default, and re-admits only `examples/synthetic/`.
+
+Even the public-domain fixture is not committed: `examples/public/` is ignored
+too, because "this one is safe" is exactly the judgement that stops being made
+carefully after the tenth time. The repository ships code, not data.
 
 Before you push, confirm:
 
@@ -318,10 +361,15 @@ src/pdftablex/
   export.py     XLSX/CSV writers + read-back verification
   specfile.py   layout JSON serialisation
   cli.py        probe / recon / extract / verify
-examples/       a synthetic, entirely fictional catalogue with nine injected defects
-tests/          23 tests, including an end-to-end run that reaches byte equality
-skills/         the agent skill wrapping this library, plus its reference sync
-docs/           methodology, defect taxonomy, verification protocol, design notes
+examples/
+  make_synthetic_pdf.py  an invented catalogue with nine injected defects
+  export_sim.py          CSV → simulated export PDF, with chosen defects
+  fetch_public.py        downloads the OurAirports fixture (public domain)
+  demo.py                end-to-end on the synthetic catalogue
+  demo_public.py         end-to-end on real data, sixteen columns
+tests/                   36 tests, including byte-equality round trips
+skills/                  the agent skill wrapping this library, plus its sync
+docs/                    methodology, defect taxonomy, verification protocol
 ```
 
 ## Development
@@ -333,9 +381,10 @@ ruff check src examples tests skills
 pytest tests -q
 python skills/sync_references.py --check      # skill references match docs/
 python examples/demo.py                       # must print PASS
+python examples/fetch_public.py && python examples/demo_public.py
 ```
 
-CI runs all four, on Python 3.10 / 3.12 / 3.13, plus a job that **fails the
+CI runs all of it, on Python 3.10 / 3.12 / 3.13, plus a job that **fails the
 build if a document or spreadsheet outside `examples/synthetic/` is ever
 tracked**.
 

@@ -202,8 +202,13 @@ def pdf_band_counters(doc, spec: TableSpec) -> dict[object, Counter]:
 
     Uses the same *geometry* helpers as extraction but none of the stitching or
     repair logic, so a bug in the join rules cannot hide here.
+
+    Characters are normalised **per band as one string**, never one at a time.
+    Case folding is not one-to-one — ``'ß'.upper() == 'SS'`` — so a
+    per-character pass records a single ``'SS'`` key where the row side records
+    two ``'S'`` keys, and the two counters then measure different alphabets.
     """
-    counters: dict[object, Counter] = {}
+    raw: dict[object, list[str]] = {}
 
     for page_index in range(doc.page_count):
         page = doc[page_index]
@@ -222,19 +227,16 @@ def pdf_band_counters(doc, spec: TableSpec) -> dict[object, Counter]:
             continue
 
         for obj in objects:
-            value = values[_band_index(obj.y, anchors)]
-            counter = counters.setdefault(value, Counter())
+            band = raw.setdefault(values[_band_index(obj.y, anchors)], [])
             for ch in obj.chars:
+                if ch.c.isspace():
+                    continue
                 # The anchor column is compared by value, not by character.
                 if spec.column_of(ch.cx) == spec.anchor.column:
                     continue
-                # Apply exactly the same normalisation as the row side, or the
-                # two counters are measuring different alphabets.
-                kept = hard(ch.c)
-                if kept:
-                    counter[kept] += 1
+                band.append(ch.c)
 
-    return counters
+    return {band: Counter(hard("".join(chars))) for band, chars in raw.items()}
 
 
 def char_conservation(
