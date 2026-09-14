@@ -346,6 +346,7 @@ history does not un-share it.
 | [`docs/verification-protocol.md`](docs/verification-protocol.md) | The checklist, and the anti-pattern list |
 | [`docs/design-notes.md`](docs/design-notes.md) | Why the method is shaped this way — including the approach that failed |
 | [`skills/README.md`](skills/README.md) | Installing and validating the agent skill |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Branch model, branch protection, and the house rules |
 
 ## Project layout
 
@@ -374,8 +375,17 @@ docs/                    methodology, defect taxonomy, verification protocol
 
 ## Development
 
-Work happens on `dev`. `main` is reserved for releases and is not committed to
-directly.
+| Branch | Purpose |
+|---|---|
+| `main` | Releases only — never committed to directly |
+| `dev` | Integration branch and repository default — never committed to directly |
+| anything else | Your work; branch off `dev`, PR back into `dev` |
+
+Neither long-lived branch takes direct pushes: a direct push skips the CI run
+and the review at the same time, which is how a working tree quietly regresses
+after a force-push or a stale-clone commit. Branch protection is expected to
+enforce this rather than merely document it — see
+[`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ```bash
 pip install -e ".[dev]"
