@@ -374,6 +374,9 @@ docs/                    methodology, defect taxonomy, verification protocol
 
 ## Development
 
+Work happens on `dev`. `main` is reserved for releases and is not committed to
+directly.
+
 ```bash
 pip install -e ".[dev]"
 
@@ -386,7 +389,9 @@ python examples/fetch_public.py && python examples/demo_public.py
 
 CI runs all of it, on Python 3.10 / 3.12 / 3.13, plus a job that **fails the
 build if a document or spreadsheet outside `examples/synthetic/` is ever
-tracked**.
+tracked**. It triggers on any branch, deliberately: a workflow that silently
+does not run because the branch is named something else is worse than one that
+runs too often.
 
 ## License
 
