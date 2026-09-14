@@ -1,8 +1,9 @@
 name: CI
 
 on:
+  # Any branch, deliberately: a workflow that silently does not run because the
+  # branch is called something else is worse than one that runs too often.
   push:
-    branches: [main]
   pull_request:
   workflow_dispatch:
 
