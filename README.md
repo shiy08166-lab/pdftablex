@@ -385,10 +385,11 @@ hooks/                   a local pre-push hook refusing direct pushes to main/de
 
 Neither long-lived branch takes direct pushes: a direct push skips the CI run
 and the review at the same time, which is how a working tree quietly regresses
-after a force-push or a stale-clone commit. GitHub cannot enforce this on a free
-plan for a private repository, so the `pre-push` hook in `hooks/` enforces it
-locally instead — install it with `git config core.hooksPath hooks`. See
-[`CONTRIBUTING.md`](CONTRIBUTING.md).
+after a force-push or a stale-clone commit. Both branches carry branch
+protection — required checks, a required pull request, no force-push, no
+deletion — so a direct push is refused server-side. The `pre-push` hook in
+`hooks/` fails the same push locally, a second earlier; install it with
+`git config core.hooksPath hooks`. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ```bash
 pip install -e ".[dev]"
