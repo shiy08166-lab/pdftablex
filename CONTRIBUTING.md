@@ -4,8 +4,8 @@
 
 | Branch | Purpose |
 |---|---|
-| `main` | Releases only. Never committed to directly. |
-| `dev` | Integration branch, and the repository's default. Never committed to directly either. |
+| `main` | The repository's default branch. Releases only — never committed to directly. |
+| `dev` | Integration branch. Never committed to directly either. |
 | anything else | Your work. Branch off `dev`, open a PR back into `dev`. |
 
 ```bash
@@ -30,7 +30,7 @@ lands. Both branches should have this enforced, not merely agreed:
 
 ```bash
 # once the repository exists
-gh api -X PUT "repos/shiy08166-lab/pdftablex/branches/dev/protection" \
+gh api -X PUT "repos/shiy08166-lab/pdftablex/branches/main/protection" \
   -H "Accept: application/vnd.github+json" \
   -f "required_status_checks[strict]=true" \
   -f "required_status_checks[contexts][]=test (3.10)" \
@@ -46,11 +46,27 @@ gh api -X PUT "repos/shiy08166-lab/pdftablex/branches/dev/protection" \
 
 `required_approving_review_count=0` still requires a PR — it just does not
 require a second person, which matters on a single-maintainer repository.
-Repeat with `branches/main` for the release branch.
+Repeat with `branches/dev` for the integration branch.
 
-> Classic branch protection is not available on private repositories for every
-> plan. If the call is rejected, use **Settings → Rules → Rulesets**, which
-> offers the same controls.
+> **A free plan cannot enable this on a private repository at all.** Both
+> classic branch protection and repository rulesets are rejected with
+> `Upgrade to GitHub Pro or make this repository public to enable this feature`.
+> Until the repository is public or on a paid plan, the rule above is a
+> convention rather than an enforcement — which is why the local `pre-push`
+> hook in `hooks/` exists.
+
+### Enforce it locally
+
+Install the hook once per clone:
+
+```bash
+git config core.hooksPath hooks
+```
+
+It refuses any push whose destination is `refs/heads/main` or `refs/heads/dev`,
+which covers the realistic single-maintainer accident. It is local only — a
+clone that never runs the command is unaffected — and `git push --no-verify`
+bypasses it deliberately.
 
 ## Before opening a PR
 

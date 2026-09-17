@@ -371,24 +371,27 @@ examples/
 tests/                   36 tests, including byte-equality round trips
 skills/                  the agent skill wrapping this library, plus its sync
 docs/                    methodology, defect taxonomy, verification protocol
+hooks/                   a local pre-push hook refusing direct pushes to main/dev
 ```
 
 ## Development
 
 | Branch | Purpose |
 |---|---|
-| `main` | Releases only — never committed to directly |
-| `dev` | Integration branch and repository default — never committed to directly |
+| `main` | Default branch. Releases only — never committed to directly |
+| `dev` | Integration branch — never committed to directly |
 | anything else | Your work; branch off `dev`, PR back into `dev` |
 
 Neither long-lived branch takes direct pushes: a direct push skips the CI run
 and the review at the same time, which is how a working tree quietly regresses
-after a force-push or a stale-clone commit. Branch protection is expected to
-enforce this rather than merely document it — see
+after a force-push or a stale-clone commit. GitHub cannot enforce this on a free
+plan for a private repository, so the `pre-push` hook in `hooks/` enforces it
+locally instead — install it with `git config core.hooksPath hooks`. See
 [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ```bash
 pip install -e ".[dev]"
+git config core.hooksPath hooks               # refuse direct pushes to main/dev
 
 ruff check src examples tests skills
 pytest tests -q

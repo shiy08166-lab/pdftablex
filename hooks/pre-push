@@ -1,0 +1,39 @@
+#!/bin/sh
+# Refuse direct pushes to the long-lived branches.
+#
+# Neither `main` nor `dev` takes direct pushes: a direct push skips the CI run
+# and the review at the same time, which is how a working tree quietly regresses
+# after a force-push or a stale-clone commit.
+#
+# GitHub cannot enforce that on a free plan for a private repository (both
+# classic branch protection and rulesets are rejected), so this hook enforces it
+# locally, for whoever installs it.
+#
+# Install once per clone:
+#     git config core.hooksPath hooks
+#
+# Bypass deliberately, when you really mean it:
+#     git push --no-verify
+#
+# It only guards this machine. A teammate who never installs it is unaffected.
+
+protected="refs/heads/main refs/heads/dev"
+status=0
+
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+    for branch in $protected; do
+        if [ "$remote_ref" = "$branch" ]; then
+            name=${remote_ref#refs/heads/}
+            echo "pre-push: refusing to push directly to '$name'." >&2
+            echo "          Branch off 'dev' and open a PR instead -- see CONTRIBUTING.md." >&2
+            status=1
+        fi
+    done
+done
+
+if [ "$status" -ne 0 ]; then
+    echo "" >&2
+    echo "If this push is intentional (e.g. the initial import), re-run with --no-verify." >&2
+fi
+
+exit $status
