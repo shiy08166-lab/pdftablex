@@ -347,6 +347,7 @@ history does not un-share it.
 | [`docs/design-notes.md`](docs/design-notes.md) | Why the method is shaped this way — including the approach that failed |
 | [`skills/README.md`](skills/README.md) | Installing and validating the agent skill |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Branch model, branch protection, and the house rules |
+| [`SECURITY.md`](SECURITY.md) | Reporting a vulnerability, and what counts as one |
 
 ## Project layout
 
