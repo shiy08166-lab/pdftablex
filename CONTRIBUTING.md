@@ -48,25 +48,30 @@ gh api -X PUT "repos/shiy08166-lab/pdftablex/branches/main/protection" \
 require a second person, which matters on a single-maintainer repository.
 Repeat with `branches/dev` for the integration branch.
 
-> **A free plan cannot enable this on a private repository at all.** Both
-> classic branch protection and repository rulesets are rejected with
-> `Upgrade to GitHub Pro or make this repository public to enable this feature`.
-> Until the repository is public or on a paid plan, the rule above is a
-> convention rather than an enforcement — which is why the local `pre-push`
-> hook in `hooks/` exists.
+> **This is enforced, not merely agreed.** Both `main` and `dev` carry branch
+> protection on GitHub: required status checks (`test (3.10)`, `test (3.12)`,
+> `test (3.13)`, `no-data-leak`), a required pull request, `enforce_admins`,
+> and force-push and deletion disabled. A direct push is refused server-side
+> with `GH006 ... Changes must be made through a pull request`.
+>
+> Protection is only available while this repository is **public**. On a free
+> plan a *private* repository rejects both classic branch protection and
+> repository rulesets with `403 Upgrade to GitHub Pro or make this repository
+> public to enable this feature`.
 
-### Enforce it locally
+### A local fast-fail
 
-Install the hook once per clone:
+`hooks/pre-push` refuses a push to `main` or `dev` before it leaves the
+machine, so a mistake fails in a second instead of after a round trip. Install
+it once per clone:
 
 ```bash
 git config core.hooksPath hooks
 ```
 
-It refuses any push whose destination is `refs/heads/main` or `refs/heads/dev`,
-which covers the realistic single-maintainer accident. It is local only — a
-clone that never runs the command is unaffected — and `git push --no-verify`
-bypasses it deliberately.
+It is local only — a clone that never runs the command is unaffected — and
+`git push --no-verify` bypasses it deliberately. GitHub is the real
+enforcement; this is just the cheap first line.
 
 ## Before opening a PR
 
